@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-git-kube-example
+  labels:
+    app: node-git-kube-example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-git-kube-example
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: node-git-kube-example
+    spec:
+      containers:
+      - name: node-git-kube-example
+        # image: emmamichael/todos-test:v0.1.0.6
+        image: <IMAGE>
+        # just added this
+        # imagePullSecrets:
+        # - name: my-apps
+
+        env:
+        - name: NODE_ENV
+          value: "development"
+        - name: PORT
+          value: "4000"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: password
+      restartPolicy: Always
+        # ports:
+        # - containerPort: 4000
+        # resources:
+        #   requests:
+        #     cpu: 100m 
+        #   limits:
+        #     cpu: 100m
+        # 100m equivalent to 0.1core
+
